@@ -1,0 +1,27 @@
+import { Breadcrumb } from "@/components/breadcrumb"
+import { ComponentHeader } from "@/components/component-header"
+
+export default function BadgePage() {
+  return (
+    <div>
+      <Breadcrumb items={[{ label: "Components" }, { label: "Badge" }]} />
+      <ComponentHeader category="Components" title="Badge" />
+      <div className="bg-card p-16 rounded-lg">
+        <div className="flex flex-col gap-16">
+          <div className="flex flex-col gap-5">
+            <h2 className="text-card-foreground">Badge Component</h2>
+            <p className="text-muted-foreground text-sm">
+              Badges are small status descriptors for UI elements.
+            </p>
+          </div>
+          <div className="border border-border rounded-lg p-8 bg-muted">
+            <div className="bg-card rounded-lg p-6">
+              <p className="text-muted-foreground text-sm mb-4">Example coming soon...</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
