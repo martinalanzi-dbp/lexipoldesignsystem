@@ -950,83 +950,78 @@ export type ButtonSize = 'small' | 'medium' | 'large';
   selector: 'app-button',
   standalone: true,
   imports: [CommonModule],
-  template: \`
-    <button
-      [class]="getButtonClasses()"
-      [disabled]="disabled"
-      (click)="onClick.emit($event)"
-      [attr.aria-label]="iconOnly ? label : null"
-    >
-      <ng-container *ngIf="leftIcon && !iconOnly">
-        <ng-container *ngTemplateOutlet="leftIcon"></ng-container>
-      </ng-container>
-      <span *ngIf="!iconOnly">{{ label }}</span>
-      <ng-container *ngIf="rightIcon && !iconOnly">
-        <ng-container *ngTemplateOutlet="rightIcon"></ng-container>
-      </ng-container>
-      <ng-container *ngIf="iconOnly && (leftIcon || rightIcon)">
-        <ng-container *ngTemplateOutlet="leftIcon || rightIcon"></ng-container>
-      </ng-container>
-    </button>
-  \`,
-  styles: [\`
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      border-radius: 4px;
-      font-weight: 500;
-      transition: all 0.2s;
-      cursor: pointer;
-      border: none;
-      outline: none;
-    }
-    .btn:focus-visible {
-      outline: 2px solid #004B87;
-      outline-offset: 2px;
-    }
-    .btn:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
-    .btn-primary {
-      background-color: #004B87;
-      color: white;
-    }
-    .btn-primary:hover:not(:disabled) {
-      background-color: rgba(0, 75, 135, 0.9);
-    }
-    .btn-secondary {
-      background-color: white;
-      color: #121926;
-      border: 1px solid #E3E8EF;
-    }
-    .btn-secondary:hover:not(:disabled) {
-      background-color: #F8FAFC;
-    }
-    .btn-destructive {
-      background-color: #EF4444;
-      color: white;
-    }
-    .btn-destructive:hover:not(:disabled) {
-      background-color: rgba(239, 68, 68, 0.9);
-    }
-    .btn-small {
-      height: 36px;
-      padding: 8px 16px;
-      font-size: 14px;
-    }
-    .btn-medium {
-      height: 40px;
-      padding: 8px 16px;
-      font-size: 16px;
-    }
-    .btn-large {
-      height: 56px;
-      padding: 16px 32px;
-      font-size: 22px;
-    }
-  \`]
+  template: \`<button
+    [class]="getButtonClasses()"
+    [disabled]="disabled"
+    (click)="onClick.emit($event)"
+    [attr.aria-label]="iconOnly ? label : null">
+    <ng-container *ngIf="leftIcon && !iconOnly">
+      <ng-container *ngTemplateOutlet="leftIcon"></ng-container>
+    </ng-container>
+    <span *ngIf="!iconOnly">{{ label }}</span>
+    <ng-container *ngIf="rightIcon && !iconOnly">
+      <ng-container *ngTemplateOutlet="rightIcon"></ng-container>
+    </ng-container>
+    <ng-container *ngIf="iconOnly && (leftIcon || rightIcon)">
+      <ng-container *ngTemplateOutlet="leftIcon || rightIcon"></ng-container>
+    </ng-container>
+  </button>\`,
+  styles: [\`.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    font-weight: 500;
+    transition: all 0.2s;
+    cursor: pointer;
+    border: none;
+    outline: none;
+  }
+  .btn:focus-visible {
+    outline: 2px solid #004B87;
+    outline-offset: 2px;
+  }
+  .btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+  .btn-primary {
+    background-color: #004B87;
+    color: white;
+  }
+  .btn-primary:hover:not(:disabled) {
+    background-color: rgba(0, 75, 135, 0.9);
+  }
+  .btn-secondary {
+    background-color: white;
+    color: #121926;
+    border: 1px solid #E3E8EF;
+  }
+  .btn-secondary:hover:not(:disabled) {
+    background-color: #F8FAFC;
+  }
+  .btn-destructive {
+    background-color: #EF4444;
+    color: white;
+  }
+  .btn-destructive:hover:not(:disabled) {
+    background-color: rgba(239, 68, 68, 0.9);
+  }
+  .btn-small {
+    height: 36px;
+    padding: 8px 16px;
+    font-size: 14px;
+  }
+  .btn-medium {
+    height: 40px;
+    padding: 8px 16px;
+    font-size: 16px;
+  }
+  .btn-large {
+    height: 56px;
+    padding: 16px 32px;
+    font-size: 22px;
+  }\`]
 })
 export class ButtonComponent {
   @Input() label: string = '';
@@ -1039,7 +1034,7 @@ export class ButtonComponent {
   @Output() onClick = new EventEmitter<Event>();
 
   getButtonClasses(): string {
-    return \`btn btn-\${this.variant} btn-\${this.size}\`;
+    return 'btn btn-' + this.variant + ' btn-' + this.size;
   }
 }
 
