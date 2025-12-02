@@ -18,11 +18,11 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body>
         <PasswordProtection>
-          <EditModeProvider>
-            <div className="min-h-screen bg-background">
-              <LayoutWrapper>{children}</LayoutWrapper>
-            </div>
-          </EditModeProvider>
+        <EditModeProvider>
+          <div className="min-h-screen bg-background">
+            <LayoutWrapper>{children}</LayoutWrapper>
+          </div>
+        </EditModeProvider>
         </PasswordProtection>
       </body>
     </html>

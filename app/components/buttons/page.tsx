@@ -3,6 +3,9 @@
 import { Breadcrumb } from "@/components/breadcrumb"
 import { ComponentHeader } from "@/components/component-header"
 import { LexipolButton } from "@/components/ui/lexipol-button"
+import { Copy, Check } from "lucide-react"
+import { useState } from "react"
+import { cn } from "@/lib/utils"
 
 const buttonVariants = [
   {
@@ -84,6 +87,435 @@ const buttonConfigurations = [
     iconOnly: true,
   },
 ]
+
+function CodeBlock({ code, language }: { code: string; language: string }) {
+  const [copied, setCopied] = useState(false)
+
+  const handleCopy = async () => {
+    await navigator.clipboard.writeText(code)
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2000)
+  }
+
+  return (
+    <div className="relative group">
+      <div className="bg-muted border border-border rounded-lg p-6 overflow-x-auto">
+        <pre className="text-xs text-foreground font-mono whitespace-pre">
+          <code>{code}</code>
+        </pre>
+      </div>
+      <button
+        onClick={handleCopy}
+        className="absolute top-4 right-4 px-3 py-1.5 bg-background border border-border rounded hover:bg-muted transition-colors flex items-center gap-2 text-xs text-muted-foreground hover:text-foreground"
+        title="Copy to clipboard"
+      >
+        {copied ? (
+          <>
+            <Check className="w-3.5 h-3.5" />
+            <span>Copied!</span>
+          </>
+        ) : (
+          <>
+            <Copy className="w-3.5 h-3.5" />
+            <span>Copy Code</span>
+          </>
+        )}
+      </button>
+    </div>
+  )
+}
+
+function CodeExamplesTabs() {
+  const [activeTab, setActiveTab] = useState<"react" | "flutter" | "angular">("react")
+
+  const reactCode = `// Solar Design System - Button Component
+import React from 'react';
+import { cn } from '@/lib/utils';
+
+type ButtonVariant = 'primary' | 'secondary' | 'destructive';
+type ButtonSize = 'small' | 'medium' | 'large';
+
+interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+  variant?: ButtonVariant;
+  size?: ButtonSize;
+  leftIcon?: React.ReactNode;
+  rightIcon?: React.ReactNode;
+  iconOnly?: boolean;
+}
+
+const buttonVariants = {
+  primary: 'bg-[#004B87] text-white hover:bg-[#004B87]/90',
+  secondary: 'bg-white text-[#121926] border border-[#E3E8EF] hover:bg-[#F8FAFC]',
+  destructive: 'bg-[#EF4444] text-white hover:bg-[#EF4444]/90',
+};
+
+const buttonSizes = {
+  small: 'h-9 px-4 text-sm',
+  medium: 'h-10 px-4 text-base',
+  large: 'h-14 px-8 text-xl',
+};
+
+export const Button: React.FC<ButtonProps> = ({
+  children,
+  variant = 'primary',
+  size = 'medium',
+  className,
+  disabled,
+  leftIcon,
+  rightIcon,
+  iconOnly = false,
+  ...props
+}) => {
+  return (
+    <button
+      className={cn(
+        'inline-flex items-center justify-center rounded',
+        'font-medium transition-colors',
+        'focus-visible:outline-none focus-visible:ring-2',
+        'focus-visible:ring-[#004B87] focus-visible:ring-offset-2',
+        'disabled:opacity-50 disabled:pointer-events-none',
+        buttonVariants[variant],
+        buttonSizes[size],
+        className
+      )}
+      disabled={disabled}
+      {...props}
+    >
+      {leftIcon && !iconOnly && (
+        <span className="mr-2">{leftIcon}</span>
+      )}
+      {!iconOnly && children}
+      {rightIcon && !iconOnly && (
+        <span className="ml-2">{rightIcon}</span>
+      )}
+      {iconOnly && (leftIcon || rightIcon)}
+    </button>
+  );
+};
+
+// Usage Examples
+<Button variant="primary" size="medium">
+  Primary Button
+</Button>
+
+<Button variant="secondary" size="medium">
+  Secondary Button
+</Button>
+
+<Button variant="destructive" size="medium">
+  Delete
+</Button>
+
+<Button variant="primary" leftIcon={<PlusIcon />}>
+  Add Item
+</Button>
+
+<Button variant="primary" size="small" disabled>
+  Disabled Button
+</Button>`
+
+  const flutterCode = `// Solar Design System - Button Component
+import 'package:flutter/material.dart';
+
+enum ButtonVariant { primary, secondary, destructive }
+enum ButtonSize { small, medium, large }
+
+class LexipolButton extends StatelessWidget {
+  final String label;
+  final ButtonVariant variant;
+  final ButtonSize size;
+  final VoidCallback? onPressed;
+  final bool disabled;
+  final Widget? leftIcon;
+  final Widget? rightIcon;
+  final bool iconOnly;
+
+  const LexipolButton({
+    Key? key,
+    required this.label,
+    this.variant = ButtonVariant.primary,
+    this.size = ButtonSize.medium,
+    this.onPressed,
+    this.disabled = false,
+    this.leftIcon,
+    this.rightIcon,
+    this.iconOnly = false,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = _getColors();
+    final dimensions = _getDimensions();
+
+    return ElevatedButton(
+      onPressed: disabled ? null : onPressed,
+      style: ElevatedButton.styleFrom(
+        backgroundColor: colors['background'],
+        foregroundColor: colors['foreground'],
+        padding: EdgeInsets.symmetric(
+          horizontal: dimensions['paddingH']!,
+          vertical: dimensions['paddingV']!,
+        ),
+        minimumSize: Size(0, dimensions['height']!),
+        textStyle: TextStyle(
+          fontSize: dimensions['fontSize']!,
+          fontWeight: FontWeight.w500,
+        ),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(4),
+        ),
+        elevation: variant == ButtonVariant.primary ? 1 : 0,
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (leftIcon != null && !iconOnly) leftIcon!,
+          if (!iconOnly) ...[
+            SizedBox(width: leftIcon != null || rightIcon != null ? 8 : 0),
+            Text(label),
+            SizedBox(width: leftIcon != null || rightIcon != null ? 8 : 0),
+          ],
+          if (rightIcon != null && !iconOnly) rightIcon!,
+          if (iconOnly && (leftIcon != null || rightIcon != null))
+            leftIcon ?? rightIcon!,
+        ],
+      ),
+    );
+  }
+
+  Map<String, Color> _getColors() {
+    switch (variant) {
+      case ButtonVariant.primary:
+        return {
+          'background': Color(0xFF004B87),
+          'foreground': Colors.white,
+        };
+      case ButtonVariant.secondary:
+        return {
+          'background': Colors.white,
+          'foreground': Color(0xFF121926),
+        };
+      case ButtonVariant.destructive:
+        return {
+          'background': Color(0xFFEF4444),
+          'foreground': Colors.white,
+        };
+    }
+  }
+
+  Map<String, double> _getDimensions() {
+    switch (size) {
+      case ButtonSize.small:
+        return {'height': 36, 'paddingH': 16, 'paddingV': 8, 'fontSize': 14};
+      case ButtonSize.medium:
+        return {'height': 40, 'paddingH': 16, 'paddingV': 8, 'fontSize': 16};
+      case ButtonSize.large:
+        return {'height': 56, 'paddingH': 32, 'paddingV': 16, 'fontSize': 22};
+    }
+  }
+}
+
+// Usage Examples
+LexipolButton(
+  label: 'Primary Button',
+  variant: ButtonVariant.primary,
+  size: ButtonSize.medium,
+  onPressed: () {},
+)
+
+LexipolButton(
+  label: 'Secondary Button',
+  variant: ButtonVariant.secondary,
+  size: ButtonSize.medium,
+  onPressed: () {},
+)
+
+LexipolButton(
+  label: 'Delete',
+  variant: ButtonVariant.destructive,
+  size: ButtonSize.medium,
+  onPressed: () {},
+)
+
+LexipolButton(
+  label: 'Button with Icon',
+  variant: ButtonVariant.primary,
+  leftIcon: Icon(Icons.add),
+  onPressed: () {},
+)`
+
+  const angularCode = `// Solar Design System - Button Component
+import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { CommonModule } from '@angular/common';
+
+export type ButtonVariant = 'primary' | 'secondary' | 'destructive';
+export type ButtonSize = 'small' | 'medium' | 'large';
+
+@Component({
+  selector: 'app-button',
+  standalone: true,
+  imports: [CommonModule],
+  template: \`<button
+    [class]="getButtonClasses()"
+    [disabled]="disabled"
+    (click)="onClick.emit($event)"
+    [attr.aria-label]="iconOnly ? label : null">
+    <ng-container *ngIf="leftIcon && !iconOnly">
+      <ng-container *ngTemplateOutlet="leftIcon"></ng-container>
+    </ng-container>
+    <span *ngIf="!iconOnly">{{ label }}</span>
+    <ng-container *ngIf="rightIcon && !iconOnly">
+      <ng-container *ngTemplateOutlet="rightIcon"></ng-container>
+    </ng-container>
+    <ng-container *ngIf="iconOnly && (leftIcon || rightIcon)">
+      <ng-container *ngTemplateOutlet="leftIcon || rightIcon"></ng-container>
+    </ng-container>
+  </button>\`,
+  styles: [\`.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    font-weight: 500;
+    transition: all 0.2s;
+    cursor: pointer;
+    border: none;
+    outline: none;
+  }
+  .btn:focus-visible {
+    outline: 2px solid #004B87;
+    outline-offset: 2px;
+  }
+  .btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+  .btn-primary {
+    background-color: #004B87;
+    color: white;
+  }
+  .btn-primary:hover:not(:disabled) {
+    background-color: rgba(0, 75, 135, 0.9);
+  }
+  .btn-secondary {
+    background-color: white;
+    color: #121926;
+    border: 1px solid #E3E8EF;
+  }
+  .btn-secondary:hover:not(:disabled) {
+    background-color: #F8FAFC;
+  }
+  .btn-destructive {
+    background-color: #EF4444;
+    color: white;
+  }
+  .btn-destructive:hover:not(:disabled) {
+    background-color: rgba(239, 68, 68, 0.9);
+  }
+  .btn-small {
+    height: 36px;
+    padding: 8px 16px;
+    font-size: 14px;
+  }
+  .btn-medium {
+    height: 40px;
+    padding: 8px 16px;
+    font-size: 16px;
+  }
+  .btn-large {
+    height: 56px;
+    padding: 16px 32px;
+    font-size: 22px;
+  }\`]
+})
+export class ButtonComponent {
+  @Input() label: string = '';
+  @Input() variant: ButtonVariant = 'primary';
+  @Input() size: ButtonSize = 'medium';
+  @Input() disabled: boolean = false;
+  @Input() leftIcon?: any;
+  @Input() rightIcon?: any;
+  @Input() iconOnly: boolean = false;
+  @Output() onClick = new EventEmitter<Event>();
+
+  getButtonClasses(): string {
+    return 'btn btn-' + this.variant + ' btn-' + this.size;
+  }
+}
+
+// Usage Examples
+<app-button
+  label="Primary Button"
+  variant="primary"
+  size="medium"
+  (onClick)="handleClick()">
+</app-button>
+
+<app-button
+  label="Secondary Button"
+  variant="secondary"
+  size="medium"
+  (onClick)="handleClick()">
+</app-button>
+
+<app-button
+  label="Delete"
+  variant="destructive"
+  size="medium"
+  (onClick)="handleDelete()">
+</app-button>
+
+<app-button
+  label="Add Item"
+  variant="primary"
+  [leftIcon]="plusIcon"
+  (onClick)="handleAdd()">
+</app-button>`
+
+  const tabs = [
+    { id: "react" as const, label: "React" },
+    { id: "flutter" as const, label: "Flutter" },
+    { id: "angular" as const, label: "Angular" },
+  ]
+
+  const getActiveCode = () => {
+    switch (activeTab) {
+      case "react":
+        return reactCode
+      case "flutter":
+        return flutterCode
+      case "angular":
+        return angularCode
+      default:
+        return reactCode
+    }
+  }
+
+  return (
+    <div className="flex flex-col gap-4">
+      {/* Tabs */}
+      <div className="flex gap-8 border-b border-border">
+        {tabs.map((tab) => (
+          <button
+            key={tab.id}
+            onClick={() => setActiveTab(tab.id)}
+            className={cn(
+              "pb-3 px-1 text-sm font-medium transition-colors relative",
+              activeTab === tab.id
+                ? "text-primary border-b-2 border-primary"
+                : "text-muted-foreground hover:text-foreground"
+            )}
+          >
+            {tab.label}
+          </button>
+        ))}
+      </div>
+
+      {/* Code Block */}
+      <CodeBlock code={getActiveCode()} language="typescript" />
+    </div>
+  )
+}
 
 export default function ButtonsPage() {
   return (
@@ -626,7 +1058,7 @@ export default function ButtonsPage() {
                     </p>
                     <p className="text-muted-foreground text-xs">
                       Primary buttons should be used for the most important
-                      action on a page, such as "Submit", "Save", or "Continue".
+                      action on a page, such as &quot;Submit&quot;, &quot;Save&quot;, or &quot;Continue&quot;.
                     </p>
                   </div>
                 </div>
@@ -641,7 +1073,7 @@ export default function ButtonsPage() {
                     </p>
                     <p className="text-muted-foreground text-xs">
                       Secondary buttons provide less visual weight and are used
-                      for secondary actions like "Cancel" or "Back".
+                      for secondary actions like &quot;Cancel&quot; or &quot;Back&quot;.
                     </p>
                   </div>
                 </div>
@@ -656,7 +1088,7 @@ export default function ButtonsPage() {
                     </p>
                     <p className="text-muted-foreground text-xs">
                       Destructive buttons should only be used for actions that
-                      cannot be undone, such as "Delete" or "Remove".
+                      cannot be undone, such as &quot;Delete&quot; or &quot;Remove&quot;.
                     </p>
                   </div>
                 </div>
@@ -682,393 +1114,14 @@ export default function ButtonsPage() {
 
           {/* Code Examples */}
           <div className="flex flex-col gap-8">
-            <h3 className="text-foreground">Code Examples</h3>
-            <p className="text-muted-foreground text-sm">
-              Copy and paste these code examples for your engineering team.
-            </p>
-
-            {/* Flutter */}
-            <div className="flex flex-col gap-4">
-              <div className="flex items-center gap-2">
-                <h4 className="text-card-foreground text-base">Flutter</h4>
-                <span className="text-xs text-muted-foreground bg-muted px-2 py-1 rounded">
-                  Dart
-                </span>
-              </div>
-              <div className="bg-muted border border-border rounded-lg p-6 overflow-x-auto">
-                <pre className="text-xs text-foreground font-mono whitespace-pre">
-                  <code>{`// Button Component
-import 'package:flutter/material.dart';
-
-enum ButtonVariant { primary, secondary, destructive }
-enum ButtonSize { small, medium, large }
-
-class LexipolButton extends StatelessWidget {
-  final String label;
-  final ButtonVariant variant;
-  final ButtonSize size;
-  final VoidCallback? onPressed;
-  final bool disabled;
-  final Widget? leftIcon;
-  final Widget? rightIcon;
-  final bool iconOnly;
-
-  const LexipolButton({
-    Key? key,
-    required this.label,
-    this.variant = ButtonVariant.primary,
-    this.size = ButtonSize.medium,
-    this.onPressed,
-    this.disabled = false,
-    this.leftIcon,
-    this.rightIcon,
-    this.iconOnly = false,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = _getColors();
-    final dimensions = _getDimensions();
-
-    return ElevatedButton(
-      onPressed: disabled ? null : onPressed,
-      style: ElevatedButton.styleFrom(
-        backgroundColor: colors['background'],
-        foregroundColor: colors['foreground'],
-        padding: EdgeInsets.symmetric(
-          horizontal: dimensions['paddingH']!,
-          vertical: dimensions['paddingV']!,
-        ),
-        minimumSize: Size(0, dimensions['height']!),
-        textStyle: TextStyle(
-          fontSize: dimensions['fontSize']!,
-          fontWeight: FontWeight.w500,
-        ),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(4),
-        ),
-        elevation: variant == ButtonVariant.primary ? 1 : 0,
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          if (leftIcon != null && !iconOnly) leftIcon!,
-          if (!iconOnly) ...[
-            SizedBox(width: leftIcon != null || rightIcon != null ? 8 : 0),
-            Text(label),
-            SizedBox(width: leftIcon != null || rightIcon != null ? 8 : 0),
-          ],
-          if (rightIcon != null && !iconOnly) rightIcon!,
-          if (iconOnly && (leftIcon != null || rightIcon != null))
-            leftIcon ?? rightIcon!,
-        ],
-      ),
-    );
-  }
-
-  Map<String, Color> _getColors() {
-    switch (variant) {
-      case ButtonVariant.primary:
-        return {
-          'background': Color(0xFF004B87),
-          'foreground': Colors.white,
-        };
-      case ButtonVariant.secondary:
-        return {
-          'background': Colors.white,
-          'foreground': Color(0xFF121926),
-        };
-      case ButtonVariant.destructive:
-        return {
-          'background': Color(0xFFEF4444),
-          'foreground': Colors.white,
-        };
-    }
-  }
-
-  Map<String, double> _getDimensions() {
-    switch (size) {
-      case ButtonSize.small:
-        return {'height': 36, 'paddingH': 16, 'paddingV': 8, 'fontSize': 14};
-      case ButtonSize.medium:
-        return {'height': 40, 'paddingH': 16, 'paddingV': 8, 'fontSize': 16};
-      case ButtonSize.large:
-        return {'height': 56, 'paddingH': 32, 'paddingV': 16, 'fontSize': 22};
-    }
-  }
-}
-
-// Usage Examples
-LexipolButton(
-  label: 'Primary Button',
-  variant: ButtonVariant.primary,
-  size: ButtonSize.medium,
-  onPressed: () {},
-)
-
-LexipolButton(
-  label: 'Secondary Button',
-  variant: ButtonVariant.secondary,
-  size: ButtonSize.medium,
-  onPressed: () {},
-)
-
-LexipolButton(
-  label: 'Delete',
-  variant: ButtonVariant.destructive,
-  size: ButtonSize.medium,
-  onPressed: () {},
-)
-
-LexipolButton(
-  label: 'Button with Icon',
-  variant: ButtonVariant.primary,
-  leftIcon: Icon(Icons.add),
-  onPressed: () {},
-)`}</code>
-                </pre>
-              </div>
+            <div className="flex flex-col gap-2">
+              <h3 className="text-foreground">Code Examples</h3>
+              <p className="text-muted-foreground text-sm">
+                Copy-paste ready code for your engineering team across React, Flutter, and Angular frameworks.
+              </p>
             </div>
 
-            {/* React */}
-            <div className="flex flex-col gap-4">
-              <div className="flex items-center gap-2">
-                <h4 className="text-card-foreground text-base">React</h4>
-                <span className="text-xs text-muted-foreground bg-muted px-2 py-1 rounded">
-                  TypeScript
-                </span>
-              </div>
-              <div className="bg-muted border border-border rounded-lg p-6 overflow-x-auto">
-                <pre className="text-xs text-foreground font-mono whitespace-pre">
-                  <code>{`// Button Component
-import React from 'react';
-import { cn } from '@/lib/utils';
-
-type ButtonVariant = 'primary' | 'secondary' | 'destructive';
-type ButtonSize = 'small' | 'medium' | 'large';
-
-interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: ButtonVariant;
-  size?: ButtonSize;
-  leftIcon?: React.ReactNode;
-  rightIcon?: React.ReactNode;
-  iconOnly?: boolean;
-}
-
-const buttonVariants = {
-  primary: 'bg-[#004B87] text-white hover:bg-[#004B87]/90',
-  secondary: 'bg-white text-[#121926] border border-[#E3E8EF] hover:bg-[#F8FAFC]',
-  destructive: 'bg-[#EF4444] text-white hover:bg-[#EF4444]/90',
-};
-
-const buttonSizes = {
-  small: 'h-9 px-4 text-sm',
-  medium: 'h-10 px-4 text-base',
-  large: 'h-14 px-8 text-xl',
-};
-
-export const Button: React.FC<ButtonProps> = ({
-  children,
-  variant = 'primary',
-  size = 'medium',
-  className,
-  disabled,
-  leftIcon,
-  rightIcon,
-  iconOnly = false,
-  ...props
-}) => {
-  return (
-    <button
-      className={cn(
-        'inline-flex items-center justify-center rounded',
-        'font-medium transition-colors',
-        'focus-visible:outline-none focus-visible:ring-2',
-        'focus-visible:ring-[#004B87] focus-visible:ring-offset-2',
-        'disabled:opacity-50 disabled:pointer-events-none',
-        buttonVariants[variant],
-        buttonSizes[size],
-        className
-      )}
-      disabled={disabled}
-      {...props}
-    >
-      {leftIcon && !iconOnly && (
-        <span className="mr-2">{leftIcon}</span>
-      )}
-      {!iconOnly && children}
-      {rightIcon && !iconOnly && (
-        <span className="ml-2">{rightIcon}</span>
-      )}
-      {iconOnly && (leftIcon || rightIcon)}
-    </button>
-  );
-};
-
-// Usage Examples
-<Button variant="primary" size="medium">
-  Primary Button
-</Button>
-
-<Button variant="secondary" size="medium">
-  Secondary Button
-</Button>
-
-<Button variant="destructive" size="medium">
-  Delete
-</Button>
-
-<Button variant="primary" leftIcon={<PlusIcon />}>
-  Add Item
-</Button>
-
-<Button variant="primary" size="small" disabled>
-  Disabled Button
-</Button>`}</code>
-                </pre>
-              </div>
-            </div>
-
-            {/* Angular */}
-            <div className="flex flex-col gap-4">
-              <div className="flex items-center gap-2">
-                <h4 className="text-card-foreground text-base">Angular</h4>
-                <span className="text-xs text-muted-foreground bg-muted px-2 py-1 rounded">
-                  TypeScript
-                </span>
-              </div>
-              <div className="bg-muted border border-border rounded-lg p-6 overflow-x-auto">
-                <pre className="text-xs text-foreground font-mono whitespace-pre">
-                  <code>{`// Button Component
-import { Component, Input, Output, EventEmitter } from '@angular/core';
-import { CommonModule } from '@angular/common';
-
-export type ButtonVariant = 'primary' | 'secondary' | 'destructive';
-export type ButtonSize = 'small' | 'medium' | 'large';
-
-@Component({
-  selector: 'app-button',
-  standalone: true,
-  imports: [CommonModule],
-  template: \`<button
-    [class]="getButtonClasses()"
-    [disabled]="disabled"
-    (click)="onClick.emit($event)"
-    [attr.aria-label]="iconOnly ? label : null">
-    <ng-container *ngIf="leftIcon && !iconOnly">
-      <ng-container *ngTemplateOutlet="leftIcon"></ng-container>
-    </ng-container>
-    <span *ngIf="!iconOnly">{{ label }}</span>
-    <ng-container *ngIf="rightIcon && !iconOnly">
-      <ng-container *ngTemplateOutlet="rightIcon"></ng-container>
-    </ng-container>
-    <ng-container *ngIf="iconOnly && (leftIcon || rightIcon)">
-      <ng-container *ngTemplateOutlet="leftIcon || rightIcon"></ng-container>
-    </ng-container>
-  </button>\`,
-  styles: [\`.btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 4px;
-    font-weight: 500;
-    transition: all 0.2s;
-    cursor: pointer;
-    border: none;
-    outline: none;
-  }
-  .btn:focus-visible {
-    outline: 2px solid #004B87;
-    outline-offset: 2px;
-  }
-  .btn:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
-  .btn-primary {
-    background-color: #004B87;
-    color: white;
-  }
-  .btn-primary:hover:not(:disabled) {
-    background-color: rgba(0, 75, 135, 0.9);
-  }
-  .btn-secondary {
-    background-color: white;
-    color: #121926;
-    border: 1px solid #E3E8EF;
-  }
-  .btn-secondary:hover:not(:disabled) {
-    background-color: #F8FAFC;
-  }
-  .btn-destructive {
-    background-color: #EF4444;
-    color: white;
-  }
-  .btn-destructive:hover:not(:disabled) {
-    background-color: rgba(239, 68, 68, 0.9);
-  }
-  .btn-small {
-    height: 36px;
-    padding: 8px 16px;
-    font-size: 14px;
-  }
-  .btn-medium {
-    height: 40px;
-    padding: 8px 16px;
-    font-size: 16px;
-  }
-  .btn-large {
-    height: 56px;
-    padding: 16px 32px;
-    font-size: 22px;
-  }\`]
-})
-export class ButtonComponent {
-  @Input() label: string = '';
-  @Input() variant: ButtonVariant = 'primary';
-  @Input() size: ButtonSize = 'medium';
-  @Input() disabled: boolean = false;
-  @Input() leftIcon?: any;
-  @Input() rightIcon?: any;
-  @Input() iconOnly: boolean = false;
-  @Output() onClick = new EventEmitter<Event>();
-
-  getButtonClasses(): string {
-    return 'btn btn-' + this.variant + ' btn-' + this.size;
-  }
-}
-
-// Usage Examples
-<app-button
-  label="Primary Button"
-  variant="primary"
-  size="medium"
-  (onClick)="handleClick()">
-</app-button>
-
-<app-button
-  label="Secondary Button"
-  variant="secondary"
-  size="medium"
-  (onClick)="handleClick()">
-</app-button>
-
-<app-button
-  label="Delete"
-  variant="destructive"
-  size="medium"
-  (onClick)="handleDelete()">
-</app-button>
-
-<app-button
-  label="Add Item"
-  variant="primary"
-  [leftIcon]="plusIcon"
-  (onClick)="handleAdd()">
-</app-button>`}</code>
-                </pre>
-              </div>
-            </div>
+            <CodeExamplesTabs />
           </div>
         </div>
       </div>

@@ -128,6 +128,45 @@ const initialColorSections: ColorSection[] = [
   }
 ]
 
+function generateFileContent(sections: ColorSection[]): string {
+  const sectionsString = sections
+    .map((section) => {
+      const colorsString = section.colors
+        .map((color) => `      { name: "${color.name}", hex: "${color.hex}" }`)
+        .join(",\n")
+
+      return `  {
+    title: "${section.title}",
+    description: ${JSON.stringify(section.description)},
+    colors: [
+${colorsString}
+    ],
+  }`
+    })
+    .join(",\n")
+
+  return `"use client"
+
+import { Breadcrumb } from "@/components/breadcrumb"
+import { ComponentHeader } from "@/components/component-header"
+import { EditableText } from "@/components/editable-text"
+import { EditableColorInput } from "@/components/editable-color-input"
+import { useEditMode } from "@/components/edit-mode-provider"
+import { useState, useEffect } from "react"
+
+type ColorSection = {
+  title: string
+  description: string
+  colors: Array<{ name: string; hex: string }>
+}
+
+const initialColorSections: ColorSection[] = [
+${sectionsString}
+]
+
+// ... rest of the file content ...`
+}
+
 function getContrastColor(hex: string): string {
   const cleanHex = hex.replace("#", "")
   const r = parseInt(cleanHex.substring(0, 2), 16)

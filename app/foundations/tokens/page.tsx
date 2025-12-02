@@ -468,9 +468,9 @@ export default function TokensPage() {
   return (
     <div>
       <Breadcrumb items={[{ label: "Foundations" }, { label: "Tokens" }]} />
-      <ComponentHeader
-        category="Foundations"
-        title="Design Tokens"
+      <ComponentHeader 
+        category="Foundations" 
+        title="Design Tokens" 
       />
 
       <div className="flex flex-col gap-12">
