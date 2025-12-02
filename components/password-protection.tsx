@@ -18,15 +18,22 @@ export function PasswordProtection({ children }: { children: React.ReactNode }) 
 
   useEffect(() => {
     setIsMounted(true)
-    // Check if user is already authenticated
-    const authenticated = localStorage.getItem(STORAGE_KEY) === "true"
-    setIsAuthenticated(authenticated)
-    setIsLoading(false)
-    
-    // If authenticated and on home page, redirect to documentation
-    if (authenticated && pathname === "/") {
-      router.push("/foundations/colors")
+    // Check if user is already authenticated (only on client)
+    if (typeof window !== "undefined") {
+      try {
+        const authenticated = localStorage.getItem(STORAGE_KEY) === "true"
+        setIsAuthenticated(authenticated)
+        
+        // If authenticated and on home page, redirect to documentation
+        if (authenticated && pathname === "/") {
+          router.push("/foundations/colors")
+        }
+      } catch (error) {
+        console.error("Error accessing localStorage:", error)
+        setIsAuthenticated(false)
+      }
     }
+    setIsLoading(false)
   }, [pathname, router])
 
   const handleSubmit = (e: React.FormEvent) => {
